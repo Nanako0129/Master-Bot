@@ -131,7 +131,7 @@ module.exports = class PlayCommand extends Command {
     if (
       // Handles PlayList Links
       query.match(
-        /^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/
+        /^(?!.*\?.*\bv=)https:\/\/(www|music)\.youtube\.com\/.*\?.*\blist=.*$/
       )
     ) {
       const playlist = await youtube.getPlaylist(query).catch(function() {
