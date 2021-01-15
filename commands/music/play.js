@@ -13,7 +13,7 @@ module.exports = class PlayCommand extends Command {
       aliases: ['play-song', 'add', 'p'],
       memberName: 'play',
       group: 'music',
-      description: 'Play any song or playlist from youtube!',
+      description: '播放Youtube上的任何音樂與播放清單！',
       guildOnly: true,
       clientPermissions: ['SPEAK', 'CONNECT'],
       throttling: {
@@ -23,7 +23,7 @@ module.exports = class PlayCommand extends Command {
       args: [
         {
           key: 'query',
-          prompt: ':notes: What song or playlist would you like to listen to?',
+          prompt: ':notes: 你想播放什麼歌曲或播放清單？',
           type: 'string',
           validate: function(query) {
             return query.length > 0 && query.length < 200;
@@ -36,7 +36,7 @@ module.exports = class PlayCommand extends Command {
   async run(message, { query }) {
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
-      message.say(':no_entry: Please join a voice channel and try again!');
+      message.say(':no_entry: 請進入語音頻道後再試一次！');
       return;
     }
 
@@ -66,14 +66,14 @@ module.exports = class PlayCommand extends Command {
       if (found) {
         const embed = new MessageEmbed()
           .setColor('#ff0000')
-          .setTitle(':eyes: Clarification Please.')
+          .setTitle(':eyes: 想確認一下...')
           .setDescription(
-            `You have a playlist named **${query}**, did you mean to play the playlist or search for **${query}** on YouTube?`
+            `你有個播放清單也名為 **${query}**，請問你是要播放這個清單呢？還是在YouTube上搜尋 **${query}** 呢？`
           )
-          .addField(':arrow_forward: Playlist', '1. Play saved playlist')
-          .addField(':mag: YouTube', '2. Search on YouTube')
-          .addField(':x: Cancel', '3. Cancel')
-          .setFooter('Choose by commenting a number between 1 and 3.');
+          .addField(':arrow_forward: Playlist', '1. 播放此清單')
+          .addField(':mag: YouTube', '2. 在YouTube上搜尋')
+          .addField(':x: Cancel', '3. 取消')
+          .setFooter('請輸入數字 1 到 3 來執行');
         const clarifyEmbed = await message.channel.send({ embed });
         message.channel
           .awaitMessages(
@@ -95,7 +95,7 @@ module.exports = class PlayCommand extends Command {
               const urlsArray = userPlaylists[location].urls;
               if (urlsArray.length == 0) {
                 message.reply(
-                  `${query} is empty, add songs to it before attempting to play it`
+                  `播放清單 ${query} 是空的喔！`
                 );
                 return;
               }
@@ -104,7 +104,7 @@ module.exports = class PlayCommand extends Command {
               }
               if (message.guild.musicData.isPlaying == true) {
                 message.channel.send(
-                  `Playlist **${query} has been added to queue**`
+                  `播放清單 **${query} 已被加入播放隊列**`
                 );
               } else if (message.guild.musicData.isPlaying == false) {
                 message.guild.musicData.isPlaying = true;
@@ -135,13 +135,13 @@ module.exports = class PlayCommand extends Command {
       )
     ) {
       const playlist = await youtube.getPlaylist(query).catch(function() {
-        message.say(':x: Playlist is either private or it does not exist!');
+        message.say(':x: 此播放清單可能是私人的或不存在！');
         return;
       });
       // add 10 as an argument in getVideos() if you choose to limit the queue
       const videosArr = await playlist.getVideos().catch(function() {
         message.say(
-          ':x: There was a problem getting one of the videos in the playlist!'
+          ':x: 歌單中有一首歌出現問題！'
         );
         return;
       });
@@ -191,7 +191,7 @@ module.exports = class PlayCommand extends Command {
           .setColor('#ff0000')
           .setTitle(`:musical_note: ${playlist.title}`)
           .addField(
-            `Playlist has added ${message.guild.musicData.queue.length} songs to queue!`,
+            `已加入 ${message.guild.musicData.queue.length} 首歌到播放隊列！`,
             playlist.url
           )
           .setThumbnail(playlist.thumbnails.high.url)
@@ -204,7 +204,7 @@ module.exports = class PlayCommand extends Command {
 
     // This if statement checks if the user entered a youtube url, it can be any kind of youtube url
     if (
-      query.match(/^(http(s)?:\/\/)?(m.)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/)
+      query.match(/^(http(s)?:\/\/)?(m.)?(music.)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/)
     ) {
       query = query
         .replace(/(>|<)/gi, '')
@@ -212,7 +212,7 @@ module.exports = class PlayCommand extends Command {
       const id = query[2].split(/[^0-9a-z_\-]/i)[0];
       let failedToGetVideo = false;
       const video = await youtube.getVideoByID(id).catch(function() {
-        message.say(':x: There was a problem getting the video you provided!');
+        message.say(':x: 在擷取你提供的影片時，出現了問題！');
         failedToGetVideo = true;
       });
       if (failedToGetVideo) return;
@@ -244,8 +244,8 @@ module.exports = class PlayCommand extends Command {
           .setColor('#ff0000')
           .setTitle(`:musical_note: ${video.title}`)
           .addField(
-            `Has been added to queue. `,
-            `This song is #${message.guild.musicData.queue.length} in queue`
+            `已加入播放隊列 `,
+            `這是隊列中的 第 #${message.guild.musicData.queue.length} 首`
           )
           .setThumbnail(video.thumbnails.high.url)
           .setURL(video.url);
@@ -291,16 +291,16 @@ module.exports = class PlayCommand extends Command {
             const videoEmbed = new MessageEmbed()
               .setThumbnail(queue[0].thumbnail)
               .setColor('#ff0000')
-              .addField(':notes: Now Playing:', queue[0].title)
+              .addField(':notes: Now Playing:', `[${queue[0].title}](${queue[0].url})`)//add hyperlink
               .addField(':stopwatch: Duration:', queue[0].duration)
               .setURL(queue[0].url)
               .setFooter(
-                `Requested by ${queue[0].memberDisplayName}!`,
+                `點播自 ${queue[0].memberDisplayName}!`,
                 queue[0].memberAvatar
               );
 
             if (queue[1] && !message.guild.musicData.loopSong)
-              videoEmbed.addField(':track_next: Next Song:', queue[1].title);
+              videoEmbed.addField(':track_next: 下一首:', queue[1].title);
             message.say(videoEmbed);
             message.guild.musicData.nowPlaying = queue[0];
             queue.shift();
@@ -336,7 +336,7 @@ module.exports = class PlayCommand extends Command {
                   ) {
                     message.guild.me.voice.channel.leave();
                     message.channel.send(
-                      ':zzz: Left channel due to inactivity.'
+                      ':zzz: 哈－－嗯...唔，我想睡了...'
                     );
                   }
                 }, 90000);
@@ -344,7 +344,7 @@ module.exports = class PlayCommand extends Command {
             }
           })
           .on('error', function(e) {
-            message.say(':x: Cannot play song!');
+            message.say(':x: 無法播放這首歌！');
             console.error(e);
             if (queue.length > 1) {
               queue.shift();
@@ -361,7 +361,7 @@ module.exports = class PlayCommand extends Command {
           });
       })
       .catch(function() {
-        message.say(':no_entry: I have no permission to join your channel!');
+        message.say(':no_entry: 我進不去你的語音頻道...好像沒有權限吶...');
         message.guild.musicData.queue.length = 0;
         message.guild.musicData.isPlaying = false;
         message.guild.musicData.nowPlaying = null;
@@ -377,13 +377,13 @@ module.exports = class PlayCommand extends Command {
   static async searchYoutube(query, message, voiceChannel) {
     const videos = await youtube.searchVideos(query, 5).catch(async function() {
       await message.say(
-        ':x: There was a problem searching the video you requested!'
+        ':x: 我找不到這首歌！Nya！'
       );
       return;
     });
     if (videos.length < 5 || !videos) {
       message.say(
-        `:x: I had some trouble finding what you were looking for, please try again or be more specific.`
+        `:x: 你再可以給我更明確的資訊嗎？`
       );
       return;
     }
@@ -402,16 +402,16 @@ module.exports = class PlayCommand extends Command {
     vidNameArr.push('cancel');
     const embed = new MessageEmbed()
       .setColor('#ff0000')
-      .setTitle(`:mag: Search Results!`)
-      .addField(':notes: Result 1', vidNameArr[0])
+      .setTitle(`:mag: 搜尋結果！`)
+      .addField(':notes: 結果 1', vidNameArr[0])
       .setURL(videos[0].url)
-      .addField(':notes: Result 2', vidNameArr[1])
-      .addField(':notes: Result 3', vidNameArr[2])
-      .addField(':notes: Result 4', vidNameArr[3])
-      .addField(':notes: Result 5', vidNameArr[4])
+      .addField(':notes: 結果 2', vidNameArr[1])
+      .addField(':notes: 結果 3', vidNameArr[2])
+      .addField(':notes: 結果 4', vidNameArr[3])
+      .addField(':notes: 結果 5', vidNameArr[4])
       .setThumbnail(videos[0].thumbnails.high.url)
-      .setFooter('Choose a song by commenting a number between 1 and 5')
-      .addField(':x: Cancel', 'to cancel ');
+      .setFooter('請輸入數字 1 到 5 來選擇你要的結果')
+      .addField(':x: Cancel', '取消');
     var songEmbed = await message.channel.send({ embed });
     message.channel
       .awaitMessages(
@@ -475,8 +475,8 @@ module.exports = class PlayCommand extends Command {
                 .setColor('#ff0000')
                 .setTitle(`:musical_note: ${video.title}`)
                 .addField(
-                  `Has been added to queue. `,
-                  `This song is #${message.guild.musicData.queue.length} in queue`
+                  `已加入播放隊列 `,
+                  `這是隊列中第 #${message.guild.musicData.queue.length} 首`
                 )
                 .setThumbnail(video.thumbnails.high.url)
                 .setURL(video.url);
@@ -489,7 +489,7 @@ module.exports = class PlayCommand extends Command {
               songEmbed.delete();
             }
             message.say(
-              ':x: An error has occured when trying to get the video ID from youtube.'
+              ':x: 在取得 YouTube 影片ID 時發生錯誤'
             );
             return;
           });
@@ -499,7 +499,7 @@ module.exports = class PlayCommand extends Command {
           songEmbed.delete();
         }
         message.say(
-          ':x: Please try again and enter a number between 1 and 5 or cancel.'
+          ':x: 請重新輸入數字 1 到 5 或 cancel'
         );
         return;
       });
@@ -507,7 +507,7 @@ module.exports = class PlayCommand extends Command {
 
   static constructSongObj(video, voiceChannel, user) {
     let duration = this.formatDuration(video.duration);
-    if (duration == '00:00') duration = ':red_circle: Live Stream';
+    if (duration == '00:00') duration = ':red_circle: 直播';
     return {
       url: `https://www.youtube.com/watch?v=${video.raw.id}`,
       title: video.title,
