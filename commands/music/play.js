@@ -5,6 +5,7 @@ const ytdl = require('ytdl-core');
 const { youtubeAPI } = require('../../config.json');
 const youtube = new Youtube(youtubeAPI);
 const db = require('quick.db');
+const { getInfo } = require('ytdl-core');
 
 module.exports = class PlayCommand extends Command {
   constructor(client) {
@@ -291,11 +292,11 @@ module.exports = class PlayCommand extends Command {
             const videoEmbed = new MessageEmbed()
               .setThumbnail(queue[0].thumbnail)
               .setColor('#ff0000')
-              .addField(':notes: Now Playing:', `[${queue[0].title}](${queue[0].url})`)//add hyperlink
-              .addField(':stopwatch: Duration:', queue[0].duration)
+              .addField(':notes: 正在播放：', `[${queue[0].title}](${queue[0].url})`)//add hyperlink
+              .addField(':stopwatch: 長度：', queue[0].duration)
               .setURL(queue[0].url)
               .setFooter(
-                `點播自 ${queue[0].memberDisplayName}!`,
+                `由 ${message.member.displayName} 點播!`,
                 queue[0].memberAvatar
               );
 
