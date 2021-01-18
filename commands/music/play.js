@@ -337,7 +337,7 @@ module.exports = class PlayCommand extends Command {
                   ) {
                     message.guild.me.voice.channel.leave();
                     message.channel.send(
-                      ':zzz: 哈－－嗯...唔，我想睡了...'
+                      ':zzz: 哈－－嗯...唔，我想睡了... :miku_comfy:'
                     );
                   }
                 }, 90000);
