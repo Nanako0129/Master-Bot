@@ -195,7 +195,7 @@ module.exports = class PlayCommand extends Command {
             `已加入 ${message.guild.musicData.queue.length} 首歌到播放隊列！`,
             playlist.url
           )
-          .setThumbnail(playlist.thumbnails.default.url)
+          .setThumbnail(playlist.thumbnails.maxres.url)
           .setURL(playlist.url);
         message.say(PlayListEmbed);
         // @TODO add the the position number of queue of the when a playlist is added
@@ -248,7 +248,7 @@ module.exports = class PlayCommand extends Command {
             `已加入播放隊列 `,
             `這是隊列中的 第 #${message.guild.musicData.queue.length} 首`
           )
-          .setThumbnail(video.thumbnails.default.url)
+          .setThumbnail(video.thumbnails.maxres.url)
           .setURL(video.url);
         message.say(addedEmbed);
         return;
@@ -410,7 +410,7 @@ module.exports = class PlayCommand extends Command {
       .addField(':notes: 結果 3', vidNameArr[2])
       .addField(':notes: 結果 4', vidNameArr[3])
       .addField(':notes: 結果 5', vidNameArr[4])
-      .setThumbnail(videos[0].thumbnails.default.url)
+      .setThumbnail(videos[0].thumbnails.maxres.url)
       .setFooter('請輸入數字 1 到 5 來選擇你要的結果')
       .addField(':x: Cancel', '取消');
     var songEmbed = await message.channel.send({ embed });
@@ -479,7 +479,7 @@ module.exports = class PlayCommand extends Command {
                   `已加入播放隊列 `,
                   `這是隊列中第 #${message.guild.musicData.queue.length} 首`
                 )
-                .setThumbnail(video.thumbnails.default.url)
+                .setThumbnail(video.thumbnails.maxres.url)
                 .setURL(video.url);
               message.say(addedEmbed);
               return;
@@ -514,7 +514,7 @@ module.exports = class PlayCommand extends Command {
       title: video.title,
       rawDuration: video.duration,
       duration,
-      thumbnail: video.thumbnails.default.url,
+      thumbnail: video.thumbnails.maxres.url,
       voiceChannel,
       memberDisplayName: user.username,
       memberAvatar: user.avatarURL('webp', false, 16)
