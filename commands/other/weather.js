@@ -98,12 +98,12 @@ module.exports = class WeatherCommand extends Command {
             ':thermometer: 當前氣溫',
             JSONObj.main.temp +
               '°C (*' +
-              (JSONObj.main.temp*5/9+32).toFixed(2) +
+              (JSONObj.main.temp*9/5+32).toFixed(2) +
               '°F* )\n' +
               '**體感溫度**\n' +
               JSONObj.main.feels_like +
               '°C (*' +
-              (JSONObj.main.feels_like*5/9+32).toFixed(2) +
+              (JSONObj.main.feels_like*9/5+32).toFixed(2) +
               '°F* )\n' +
               '**相對濕度**\n' +
               JSONObj.main.humidity +
